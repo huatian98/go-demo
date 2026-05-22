@@ -16,3 +16,4 @@ configs/config.local.yaml
 # 日志
 *.log
 logs/
+deploy-stage35.sh
