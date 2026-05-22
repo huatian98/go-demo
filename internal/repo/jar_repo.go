@@ -34,6 +34,39 @@ func (r *JarRepo) ListAvailable(limit int) ([]model.WineJar, error) {
 	return jars, nil
 }
 
+// JarBrief 酒坛 + 系列 + 酒窖关联,给选坛页用
+type JarBrief struct {
+	ID         uint64  `json:"id"`
+	Code       string  `json:"code"`
+	Year       int     `json:"year"`
+	CoverURL   string  `json:"cover_url"`
+	Status     string  `json:"status"`
+	SeriesID   uint64  `json:"series_id"`
+	SeriesName string  `json:"series_name"`
+	BasePrice  float64 `json:"base_price"`
+	CellarID   uint64  `json:"cellar_id"`
+	CellarName string  `json:"cellar_name"`
+	Address    string  `json:"address"`
+}
+
+func (r *JarRepo) ListAvailableBrief(limit int) ([]JarBrief, error) {
+	if limit <= 0 {
+		limit = 50
+	}
+	var briefs []JarBrief
+	err := r.db.Table("wine_jars").
+		Select(`wine_jars.id, wine_jars.code, wine_jars.year, wine_jars.cover_url, wine_jars.status,
+		        wine_series.id  AS series_id, wine_series.name AS series_name, wine_series.base_price,
+		        cellars.id      AS cellar_id, cellars.name AS cellar_name, cellars.address`).
+		Joins("LEFT JOIN wine_series ON wine_series.id = wine_jars.series_id").
+		Joins("LEFT JOIN cellars ON cellars.id = wine_jars.cellar_id").
+		Where("wine_jars.status = ?", "idle").
+		Order("wine_jars.id ASC").
+		Limit(limit).
+		Scan(&briefs).Error
+	return briefs, err
+}
+
 // ListActive 返回所有已认领且在养护中的酒坛(给定时任务用)
 func (r *JarRepo) ListActive() ([]model.WineJar, error) {
 	var jars []model.WineJar

@@ -37,6 +37,7 @@ func Setup(h *Handlers) *gin.Engine {
 		v1.GET("/components", h.Home.Components)
 		v1.GET("/home/cellar-env", h.Home.CellarEnv)
 		v1.GET("/home/craft-steps", h.Home.CraftSteps)
+		v1.GET("/jars/available", h.Jar.Available)
 		v1.GET("/jars/:id/metrics/latest", h.Jar.MetricsLatest)
 		v1.GET("/jars/:id/metrics/history", h.Jar.MetricsHistory)
 		v1.GET("/jars/:id/timeline", h.Home.Timeline)

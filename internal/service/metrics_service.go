@@ -132,7 +132,7 @@ func pickBreathing(agingDays int) string {
 
 func generateNarrative(code string, ph, temp float64, state string) string {
 	if ph > 4.7 {
-		return fmt.Sprintf("酸度略高(%.2f),%s 的脸颊微微泛红,需注意窖温调控", code, code)
+		return fmt.Sprintf("酸度略高(%.2f),%s 的脸颊微微泛红,需注意窖温调控", ph, code)
 	}
 	if temp > 19.5 {
 		return fmt.Sprintf("窖温偏暖(%.1f°C),%s 略显躁动,菌群活跃度上升", temp, code)

@@ -39,7 +39,7 @@ func main() {
 	handlers := &router.Handlers{
 		Auth:   handler.NewAuthHandler(authSvc),
 		Home:   handler.NewHomeHandler(homeSvc, metricsSvc, seriesRepo, contentRepo, timelineRepo),
-		Jar:    handler.NewJarHandler(handler.JarHandlerDeps{MetricsSvc: metricsSvc}),
+		Jar:    handler.NewJarHandler(handler.JarHandlerDeps{MetricsSvc: metricsSvc, JarRepo: jarRepo}),
 		Claim:  handler.NewClaimHandler(claimSvc),
 		Legacy: handler.NewLegacyHandler(jarRepo, seriesRepo, cellarRepo),
 	}

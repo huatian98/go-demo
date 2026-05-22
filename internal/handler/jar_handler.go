@@ -4,27 +4,41 @@ import (
 	"strconv"
 
 	"go-demo/internal/pkg/resp"
+	"go-demo/internal/repo"
 	"go-demo/internal/service"
 
 	"github.com/gin-gonic/gin"
 )
 
 type JarHandler struct {
-	metricsSvc   *service.MetricsService
-	timelineRepo TimelineLister
+	metricsSvc *service.MetricsService
+	jarRepo    *repo.JarRepo
 }
 
-type TimelineLister interface {
-	ListByJar(jarID uint64) (interface{}, error)
-}
-
-// 简化:用 service 注入
 type JarHandlerDeps struct {
 	MetricsSvc *service.MetricsService
+	JarRepo    *repo.JarRepo
 }
 
 func NewJarHandler(d JarHandlerDeps) *JarHandler {
-	return &JarHandler{metricsSvc: d.MetricsSvc}
+	return &JarHandler{metricsSvc: d.MetricsSvc, jarRepo: d.JarRepo}
+}
+
+// GET /api/v1/jars/available
+func (h *JarHandler) Available(c *gin.Context) {
+	limit, _ := strconv.Atoi(c.Query("limit"))
+	if limit <= 0 || limit > 100 {
+		limit = 50
+	}
+	list, err := h.jarRepo.ListAvailableBrief(limit)
+	if err != nil {
+		resp.ServerError(c, err.Error())
+		return
+	}
+	if list == nil {
+		list = []repo.JarBrief{}
+	}
+	resp.OK(c, list)
 }
 
 // GET /api/v1/jars/:id/metrics/latest
