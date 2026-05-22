@@ -97,18 +97,18 @@ func (Payment) TableName() string { return "payments" }
 
 // JarMetrics 酒坛实时指标(时序数据)
 type JarMetrics struct {
-	ID                 uint64    `gorm:"primaryKey" json:"id"`
-	JarID              uint64    `gorm:"index:idx_jar_time,priority:1;not null" json:"jar_id"`
-	PhLevel            float64   `gorm:"type:decimal(4,2);not null" json:"ph_level"`
-	PhStatus           string    `gorm:"size:16" json:"ph_status"`
-	CellarTemperature  float64   `gorm:"type:decimal(4,1);not null" json:"cellar_temperature"`
-	CellarHumidity     float64   `gorm:"type:decimal(4,1);not null" json:"cellar_humidity"`
-	OutdoorTemperature float64   `gorm:"type:decimal(4,1)" json:"outdoor_temperature"`
-	OutdoorLux         int       `json:"outdoor_lux"`
-	BreathingState     string    `gorm:"size:32" json:"breathing_state"`
-	AINarrative        string    `gorm:"type:text" json:"ai_narrative"`
-	RecordedAt         time.Time `gorm:"index:idx_jar_time,priority:2;not null" json:"recorded_at"`
-	CreatedAt          time.Time `json:"created_at"`
+	ID                uint64    `gorm:"primaryKey" json:"id"`
+	WineJarID         string    `gorm:"column:wine_jar_id;size:32;not null;index:idx_jar_time,priority:1" json:"wine_jar_id"`
+	WinePh            float64   `gorm:"column:wine_ph;type:decimal(4,2);not null" json:"wine_ph"`
+	PhStatus          string    `gorm:"size:16" json:"ph_status"`
+	InCellarTemp      float64   `gorm:"column:in_cellar_temp;type:decimal(4,1);not null" json:"in_cellar_temp"`
+	InCellarHumidity  float64   `gorm:"column:in_cellar_humidity;type:decimal(4,1);not null" json:"in_cellar_humidity"`
+	OutCellarTemp     float64   `gorm:"column:out_cellar_temp;type:decimal(4,1)" json:"out_cellar_temp"`
+	OutCellarHumidity float64   `gorm:"column:out_cellar_humidity;type:decimal(4,1)" json:"out_cellar_humidity"`
+	BreathingState    string    `gorm:"size:32" json:"breathing_state"`
+	AINarrative       string    `gorm:"type:text" json:"ai_narrative"`
+	RecordedAt        time.Time `gorm:"index:idx_jar_time,priority:2;not null" json:"recorded_at"`
+	CreatedAt         time.Time `json:"created_at"`
 }
 
 func (JarMetrics) TableName() string { return "jar_metrics" }

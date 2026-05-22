@@ -19,11 +19,25 @@ func NewMetricsService(j *repo.JarRepo, m *repo.MetricsRepo) *MetricsService {
 	return &MetricsService{jarRepo: j, metricsRepo: m}
 }
 
-func (s *MetricsService) Latest(jarID uint64) (*model.JarMetrics, error) {
-	m, err := s.metricsRepo.LatestByJar(jarID)
+// Latest 通过 jar 内部 ID 查找(向后兼容老 handler)
+func (s *MetricsService) Latest(jarInternalID uint64) (*model.JarMetrics, error) {
+	jar, err := s.jarRepo.GetByID(jarInternalID)
 	if err != nil {
-		// 没数据时返回一条即时生成的(不入库)
-		jar, ferr := s.jarRepo.GetByID(jarID)
+		return nil, err
+	}
+	m, err := s.metricsRepo.LatestByJar(jar.Code)
+	if err != nil {
+		// 没有数据时即时合成一条(不入库)
+		return s.synthesize(jar, false), nil
+	}
+	return m, nil
+}
+
+// LatestByCode 直接用酒坛编号查
+func (s *MetricsService) LatestByCode(wineJarID string) (*model.JarMetrics, error) {
+	m, err := s.metricsRepo.LatestByJar(wineJarID)
+	if err != nil {
+		jar, ferr := s.jarRepo.GetByCode(wineJarID)
 		if ferr != nil {
 			return nil, ferr
 		}
@@ -32,11 +46,15 @@ func (s *MetricsService) Latest(jarID uint64) (*model.JarMetrics, error) {
 	return m, nil
 }
 
-func (s *MetricsService) History(jarID uint64, days int) ([]model.JarMetrics, error) {
+func (s *MetricsService) History(jarInternalID uint64, days int) ([]model.JarMetrics, error) {
 	if days <= 0 || days > 30 {
 		days = 7
 	}
-	return s.metricsRepo.HistoryByJar(jarID, days)
+	jar, err := s.jarRepo.GetByID(jarInternalID)
+	if err != nil {
+		return nil, err
+	}
+	return s.metricsRepo.HistoryByJar(jar.Code, days)
 }
 
 func (s *MetricsService) CellarEnv() (map[string]interface{}, error) {
@@ -69,11 +87,11 @@ func (s *MetricsService) synthesize(jar *model.WineJar, persist bool) *model.Jar
 		agingDays = int(time.Since(*jar.ClaimedAt).Hours() / 24)
 	}
 
-	cellarTemp := 18.0 + rng.Float64()*2.0  // 18~20℃
-	cellarHum := 75.0 + rng.Float64()*5.0   // 75~80%
-	outdoorTemp := 20.0 + rng.Float64()*8.0 // 20~28℃
-	outdoorLux := 80 + rng.Intn(120)
-	ph := 4.3 + rng.Float64()*0.5 // 4.3~4.8
+	inTemp := 18.0 + rng.Float64()*2.0    // 18~20℃
+	inHum := 75.0 + rng.Float64()*5.0     // 75~80%
+	outTemp := 20.0 + rng.Float64()*8.0   // 20~28℃
+	outHum := 55.0 + rng.Float64()*20.0   // 55~75%
+	ph := 4.3 + rng.Float64()*0.5         // 4.3~4.8
 
 	phStatus := "稳定"
 	if ph > 4.7 {
@@ -81,19 +99,19 @@ func (s *MetricsService) synthesize(jar *model.WineJar, persist bool) *model.Jar
 	}
 
 	breathing := pickBreathing(agingDays)
-	narrative := generateNarrative(jar.Code, ph, cellarTemp, breathing)
+	narrative := generateNarrative(jar.Code, ph, inTemp, breathing)
 
 	return &model.JarMetrics{
-		JarID:              jar.ID,
-		PhLevel:            round2(ph),
-		PhStatus:           phStatus,
-		CellarTemperature:  round1(cellarTemp),
-		CellarHumidity:     round1(cellarHum),
-		OutdoorTemperature: round1(outdoorTemp),
-		OutdoorLux:         outdoorLux,
-		BreathingState:     breathing,
-		AINarrative:        narrative,
-		RecordedAt:         time.Now(),
+		WineJarID:         jar.Code,
+		WinePh:            round2(ph),
+		PhStatus:          phStatus,
+		InCellarTemp:      round1(inTemp),
+		InCellarHumidity:  round1(inHum),
+		OutCellarTemp:     round1(outTemp),
+		OutCellarHumidity: round1(outHum),
+		BreathingState:    breathing,
+		AINarrative:       narrative,
+		RecordedAt:        time.Now(),
 	}
 }
 

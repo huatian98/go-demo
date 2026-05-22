@@ -31,9 +31,11 @@ func NewHomeService(
 }
 
 type CellarEnvResp struct {
-	CellarTemperature float64 `json:"cellar_temperature"`
-	CellarHumidity    float64 `json:"cellar_humidity"`
-	PhLevel           float64 `json:"ph_level"`
+	InCellarTemp      float64           `json:"in_cellar_temp"`
+	InCellarHumidity  float64           `json:"in_cellar_humidity"`
+	OutCellarTemp     float64           `json:"out_cellar_temp"`
+	OutCellarHumidity float64           `json:"out_cellar_humidity"`
+	WinePh            float64           `json:"wine_ph"`
 	CraftSteps        []model.CraftStep `json:"craft_steps"`
 }
 
@@ -44,9 +46,11 @@ func (s *HomeService) CellarEnv() (*CellarEnvResp, error) {
 	}
 	steps, _ := s.contentRepo.ListCraftSteps()
 	return &CellarEnvResp{
-		CellarTemperature: env["cellar_temperature"].(float64),
-		CellarHumidity:    env["cellar_humidity"].(float64),
-		PhLevel:           env["ph_level"].(float64),
+		InCellarTemp:      env["in_cellar_temp"].(float64),
+		InCellarHumidity:  env["in_cellar_humidity"].(float64),
+		OutCellarTemp:     env["out_cellar_temp"].(float64),
+		OutCellarHumidity: env["out_cellar_humidity"].(float64),
+		WinePh:            env["wine_ph"].(float64),
 		CraftSteps:        steps,
 	}, nil
 }

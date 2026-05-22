@@ -99,20 +99,20 @@ COMMENT ON TABLE payments IS '支付订单';
 -- ============ 酒坛实时指标 ============
 CREATE TABLE IF NOT EXISTS jar_metrics (
   id BIGSERIAL PRIMARY KEY,
-  jar_id BIGINT NOT NULL,
-  ph_level DECIMAL(4,2) NOT NULL,
-  ph_status VARCHAR(16),
-  cellar_temperature DECIMAL(4,1) NOT NULL,
-  cellar_humidity DECIMAL(4,1) NOT NULL,
-  outdoor_temperature DECIMAL(4,1),
-  outdoor_lux INT,
-  breathing_state VARCHAR(32),
-  ai_narrative TEXT,
-  recorded_at TIMESTAMPTZ NOT NULL,
+  wine_jar_id VARCHAR(32) NOT NULL,             -- 关联 wine_jars.code
+  wine_ph DECIMAL(4,2) NOT NULL,                 -- 酸碱度
+  ph_status VARCHAR(16),                          -- 稳定/偏高
+  in_cellar_temp DECIMAL(4,1) NOT NULL,           -- 酒窖内温度
+  in_cellar_humidity DECIMAL(4,1) NOT NULL,       -- 酒窖内湿度
+  out_cellar_temp DECIMAL(4,1),                   -- 酒窖外温度
+  out_cellar_humidity DECIMAL(4,1),               -- 酒窖外湿度
+  breathing_state VARCHAR(32),                    -- 呼吸状态
+  ai_narrative TEXT,                              -- AI 醒酒师文案
+  recorded_at TIMESTAMPTZ NOT NULL,               -- 数据采集时间
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-CREATE INDEX IF NOT EXISTS idx_jar_metrics_jar_time ON jar_metrics (jar_id, recorded_at DESC);
-COMMENT ON TABLE jar_metrics IS '酒坛实时指标(时序)';
+CREATE INDEX IF NOT EXISTS idx_jar_metrics_jar_time ON jar_metrics (wine_jar_id, recorded_at DESC);
+COMMENT ON TABLE jar_metrics IS '酒坛实时指标(时序,wine_jar_id 关联 wine_jars.code)';
 
 -- ============ 成长故事时间线 ============
 CREATE TABLE IF NOT EXISTS jar_timeline (
