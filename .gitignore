@@ -1,0 +1,18 @@
+# 编译产物
+go-demo
+*.exe
+/tmp/
+
+# 本地配置(不要提交真实密码)
+configs/config.local.yaml
+*.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# 日志
+*.log
+logs/

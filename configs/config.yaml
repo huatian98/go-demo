@@ -1,0 +1,20 @@
+app:
+  name: shiguang-niang
+  env: dev
+  port: 8080
+
+database:
+  host: 127.0.0.1
+  port: 5432
+  user: godemo_user
+  password: GoDemo_2026_QwE
+  dbname: shiguang_niang
+  sslmode: disable
+  timezone: Asia/Shanghai
+
+jwt:
+  secret: "shiguang-niang-jwt-secret-change-me-in-prod"
+  expire_hours: 168    # 7 天
+
+metrics:
+  interval_minutes: 30
