@@ -30,6 +30,26 @@ func (r *ClaimRepo) ListByUser(userID uint64) ([]model.Claim, error) {
 	return list, nil
 }
 
+type ClaimVO struct {
+	model.Claim
+	JarCode    string `json:"jar_code"`
+	SeriesName string `json:"series_name"`
+	CellarName string `json:"cellar_name"`
+}
+
+func (r *ClaimRepo) ListByUserWithJar(userID uint64) ([]ClaimVO, error) {
+	var list []ClaimVO
+	err := r.db.Table("claims c").
+		Select("c.*, j.code AS jar_code, s.name AS series_name, cl.name AS cellar_name").
+		Joins("LEFT JOIN wine_jars j ON j.id = c.jar_id").
+		Joins("LEFT JOIN wine_series s ON s.id = j.series_id").
+		Joins("LEFT JOIN cellars cl ON cl.id = c.cellar_id").
+		Where("c.user_id = ?", userID).
+		Order("c.created_at DESC").
+		Scan(&list).Error
+	return list, err
+}
+
 func (r *ClaimRepo) UpdateStatus(id uint64, status string) error {
 	return r.db.Model(&model.Claim{}).Where("id = ?", id).Update("status", status).Error
 }

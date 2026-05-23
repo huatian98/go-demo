@@ -155,15 +155,14 @@ COMMENT ON TABLE craft_steps IS '古法酿造工艺';
 -- 系列
 INSERT INTO wine_series (id, name, description, cover_url, base_price, sort, status)
 VALUES
-  (1, '十摊7春分系列', '春分时节古法酿造,选用屏南古田红曲,清雅醇厚', '/static/series/spring.jpg', 1299.00, 1, 1),
-  (2, '十摊9秋分系列', '秋分时节窖藏,口感更醇厚饱满', '/static/series/autumn.jpg', 1499.00, 2, 1),
-  (3, '十摊10冬至系列', '冬至深窖,适合长期陈酿', '/static/series/winter.jpg', 1899.00, 3, 1)
+  (1, '原酿系列', '传统古法酿造，选用屏南古田红曲，清雅醇厚', '/static/series/spring.jpg', 198.00, 1, 1),
+  (3, '酒酿酒系列', '传统酒酿酒工艺，以酒养酒，层层叠香', '/static/series/winter.jpg', 198.00, 2, 1)
 ON CONFLICT (id) DO NOTHING;
 
 -- 酒窖
 INSERT INTO cellars (id, name, address, province, city, capacity, available)
 VALUES
-  (1, '四平村古窖藏', '福建省宁德市屏南县四平村', '福建省', '宁德市', 500, 380),
+  (1, '四坪村古窖藏', '福建省宁德市屏南县四坪村', '福建省', '宁德市', 500, 380),
   (2, '云岭古窖', '云南省大理州云龙县', '云南省', '大理州', 300, 250),
   (3, '终南山藏', '陕西省西安市长安区终南山', '陕西省', '西安市', 400, 320)
 ON CONFLICT (id) DO NOTHING;

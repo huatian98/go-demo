@@ -24,7 +24,7 @@ ALTER SEQUENCE jar_metrics_id_seq RESTART WITH 1;
 ALTER SEQUENCE jar_timeline_id_seq RESTART WITH 1;
 
 -- ============ 2. 插 12 坛酒(全部 idle 可认领) ============
--- 系列 1=春分 / 2=秋分 / 3=冬至,酒窖 1=四平 / 2=云岭 / 3=终南
+-- 系列 1=原酿 / 3=酒酿酒,酒窖 1=四坪 / 2=云岭 / 3=终南
 INSERT INTO wine_jars (id, code, series_id, cellar_id, year, status, created_at) VALUES
   (1,  'BQ-0827', 1, 1, 2024, 'idle', NOW()),
   (2,  'BQ-0901', 2, 2, 2024, 'idle', NOW()),

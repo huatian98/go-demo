@@ -127,8 +127,8 @@ func (s *ClaimService) MockPay(claimID uint64) error {
 	})
 }
 
-func (s *ClaimService) ListByUser(userID uint64) ([]model.Claim, error) {
-	return s.claimRepo.ListByUser(userID)
+func (s *ClaimService) ListByUser(userID uint64) ([]repo.ClaimVO, error) {
+	return s.claimRepo.ListByUserWithJar(userID)
 }
 
 func (s *ClaimService) GetByID(id uint64) (*model.Claim, error) {
